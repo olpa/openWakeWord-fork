@@ -69,7 +69,6 @@ setuptools.setup(
                     'tensorflow-cpu>=2.20.0',
                     'tensorflow-probability>=0.25.0',
                     'protobuf>=6.33.0',
-                    'onnx-tf>=1.10.0',
                     'onnx>=1.19.1',
                     'pronouncing>=0.2.0',
                     'datasets>=4.4.1',

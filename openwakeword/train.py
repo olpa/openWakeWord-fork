@@ -417,10 +417,10 @@ class Model(nn.Module):
         return preds
 
     def export_model(self, model, model_name, output_dir):
-        """Saves the trained openwakeword model to both onnx and tflite formats"""
+        """Saves the trained openwakeword model to onnx format"""
 
         if self.n_classes != 1:
-            raise ValueError("Exporting models to both onnx and tflite with more than one class is currently not supported! "
+            raise ValueError("Exporting models with more than one class is currently not supported! "
                              "Use the `export_to_onnx` function instead.")
 
         # Save ONNX model
@@ -568,29 +568,6 @@ class Model(nn.Module):
 
             if step_ndx == max_steps-1:
                 break
-
-
-# Separate function to convert onnx models to tflite format
-def convert_onnx_to_tflite(onnx_model_path, output_path):
-    """Converts an ONNX version of an openwakeword model to the Tensorflow tflite format."""
-    # imports
-    import onnx
-    from onnx_tf.backend import prepare
-    import tensorflow as tf
-
-    # Convert to tflite from onnx model
-    onnx_model = onnx.load(onnx_model_path)
-    tf_rep = prepare(onnx_model, device="CPU")
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        tf_rep.export_graph(os.path.join(tmp_dir, "tf_model"))
-        converter = tf.lite.TFLiteConverter.from_saved_model(os.path.join(tmp_dir, "tf_model"))
-        tflite_model = converter.convert()
-
-        logging.info(f"####\nSaving tflite mode to '{output_path}'")
-        with open(output_path, 'wb') as f:
-            f.write(tflite_model)
-
-    return None
 
 
 if __name__ == '__main__':
@@ -914,7 +891,3 @@ if __name__ == '__main__':
 
         # Export the trained model to onnx
         oww.export_model(model=best_model, model_name=config["model_name"], output_dir=config["output_dir"])
-
-        # Convert the model from onnx to tflite format
-        convert_onnx_to_tflite(os.path.join(config["output_dir"], config["model_name"] + ".onnx"),
-                               os.path.join(config["output_dir"], config["model_name"] + ".tflite"))
