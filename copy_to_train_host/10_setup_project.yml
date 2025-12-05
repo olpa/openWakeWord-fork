@@ -1,0 +1,55 @@
+---
+- name: Setup OpenWakeWord Training Environment
+  hosts: training_host
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install required system packages
+      apt:
+        name:
+          - git
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Create remote project directory
+      file:
+        path: "{{ remote_project_root }}"
+        state: directory
+        mode: '0755'
+
+    - name: Clone openWakeWord repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: "{{ remote_repo_dir }}"
+        version: "{{ git_branch }}"
+        force: yes
+
+    - name: Create Python virtual environment
+      shell: |
+        cd {{ remote_project_root }}
+        python3 -m venv venv
+      args:
+        executable: /bin/bash
+        creates: "{{ remote_project_root }}/venv/bin/python"
+
+    - name: Install dependencies in virtual environment
+      shell: |
+        cd {{ remote_project_root }}
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -e {{ remote_repo_dir }}[full]
+      args:
+        executable: /bin/bash
+
+    - name: Verify training script runs
+      shell: |
+        cd {{ remote_project_root }}
+        source venv/bin/activate
+        python -m openwakeword.train --help
+      args:
+        executable: /bin/bash

@@ -1,0 +1,24 @@
+---
+# Ansible Variables for OpenWakeWord Training Deployment
+
+# Git repository configuration
+git_repo: "https://github.com/olpa/openWakeWord-fork.git"
+git_branch: "main"  # Change to your preferred branch (e.g., "develop", "feature/xyz")
+
+# Local paths (where your training data files are currently located)
+local_project_root: "/mnt/HC_Volume_103884471/oww"
+local_config_file: "/mnt/HC_Volume_103884471/oww/training_config.yaml"
+local_output_dir: "/mnt/HC_Volume_103884471/oww/output"
+
+# Remote paths (where files will be deployed on the remote server)
+remote_project_root: "~/oww/deploy_test"
+remote_output_dir: "~/oww/deploy_test/output"
+remote_repo_dir: "~/oww/deploy_test/openWakeWord-fork"
+
+# Python configuration
+# Virtual environment is created at: {{ remote_project_root }}/venv
+# Python executable is invoked as "python" which will use the venv's version
+
+# Optional: Customize these if needed
+# rsync_bandwidth_limit: "10000"  # KB/s
+# ansible_ssh_port: 22
